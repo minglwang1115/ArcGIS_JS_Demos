@@ -204,6 +204,8 @@ ArcGIS JS API里面有大数据集要素可视化的例子，通过`FeatureLayer
 通过60000个点进行测试，无卡顿情况，推测ArcGIS JS API内部有优化，如分块渲染、量化操作等([可参考链接1](https://www.esri.com/arcgis-blog/products/js-api-arcgis/3d-gis/visualize-large-feature-datasets-in-3d-with-arcgis-api-for-javascript/?tdsourcetag=s_pcqq_aiomsg))
 
 # 效果图
+[效果在线预览](https://minglwang1115.github.io/ArcGIS_JS_Demos/FeatureLayer_Renderer/FeatureLayer_Renderer.html)
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190702203258121.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dtbDAwMDAw,size_16,color_FFFFFF,t_70)
 
 

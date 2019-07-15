@@ -153,11 +153,13 @@ ArcGIS Pro用于发布三维场景服务(包含Elevation Layer和Tile Layer)，�
                 });
 ```
 
-# 4. [完整代码](https://github.com/minglwang1115/ArcGIS_JS_Demos/tree/master/Dynamic_Simulation)
+# 4. 完整代码
+
+见上面的 `Dynamic_Simulation.html`
 
 # 5. 效果图
 
 ![动态效果图](http://ww1.sinaimg.cn/large/007TqXN5ly1g50iu88hwkg31f40qee83.gif)
 
-[效果预览]()
+[效果在线预览](https://minglwang1115.github.io/ArcGIS_JS_Demos/Dynamic_Simulation/Dynamic_Simulation.html)
 
