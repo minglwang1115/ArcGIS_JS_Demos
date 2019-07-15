@@ -1,7 +1,5 @@
 # 基于AcrGIS平台实现三维场景下的积水效果动态模拟
 
-@[TOC]
-
 # 1.前言
 
 现有基于暴雨洪水管理模型(SWMM)生成的多个时刻的积水区数据(json格式)，要求在三维场景下依照时间动态展示积水的变化效果。在此记录开发过程中遇到的一些问题及注意事项。
@@ -152,11 +150,10 @@ ArcGIS Pro用于发布三维场景服务(包含Elevation Layer和Tile Layer)，�
                         layer.source = features; //重置FeatureLayer数据源
                         layer.refresh(); // 刷新FeatureLayer
                     });
-
                 });
 ```
 
-# 4. [完整代码]()
+# 4. [完整代码](https://github.com/minglwang1115/ArcGIS_JS_Demos/tree/master/Dynamic_Simulation)
 
 # 5. 效果图
 
