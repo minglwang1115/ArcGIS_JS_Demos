@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>实现FeatureLayer大数据集的多变量渲染</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.11/"></script>
+  <script>
+    require(["esri/Map", "esri/views/SceneView", "esri/layers/FeatureLayer"], function (Map, SceneView, FeatureLayer) {
+      var map = new Map({
+        basemap: "streets",
+        ground: "world-elevation"
+      });
+      var view = new SceneView({
+        container: "viewDiv", // Reference to the scene div created in step 5
+        map: map, // Reference to the map object created before the scene
+        scale: 5000000, // Sets the initial scale to 1:50,000,000
+        center: [-101.17, 21.78], // Sets the center point of view with lon/lat
+        // viewingMode: "local"
+      });
+      view.on('click', (evt) => {
+        console.log(evt.mapPoint);
+      })
+      var features = [];
+
+      //模拟二维数组
+      var elevArr = [];
+      var fid = 0;
+      for (let i = 0; i < 100; i++) {
+        let rowArr = [];
+        for (let j = 0; j < 600; j++) {
+          rowArr.push(Math.random() * 1000);
+        }
+        elevArr.push(rowArr);
+      }
+
+      let leftCoorX, upCoorY, resolution;
+      for (let row = 0; row < elevArr.length; row++) {
+        for (let col = 0; col < elevArr[row].length; col++ , fid++) {
+          let locX = -11807396.534464896 + 500 + col * 500;
+          let locY = 2727548.99928753 - 500 - row * 500;
+          let feature = {
+            geometry: {
+              type: "point",  //不可省略
+              x: locX,
+              y: locY,
+              spatialReference: { wkid: 3857 },  //不可省略
+            },
+            attributes: {
+              ObjectID: fid,
+              elevation: elevArr[row][col],
+              width: "100",
+              depth: "100"
+            }
+          };
+          features.push(feature);
+        }
+      }
+      var uvRenderer = {
+        type: "simple",  // autocasts as new SimpleRenderer()
+        symbol: {
+          type: "point-3d",  // autocasts as new PointSymbol3D()
+          symbolLayers: [{
+            type: "object",  // autocasts as new ObjectSymbol3DLayer()
+            // width: 1000,  // diameter of the object from east to west in meters
+            // height: 5000,  // height of the object in meters
+            // depth: 1000,  // diameter of the object from north to south in meters
+            resource: { primitive: "cube" },
+            material: { color: "blue" }
+          }]
+        },
+        visualVariables: [
+          {
+            type: "size",
+            axis: "height", //在symbolLayers设置width、height、depth无效
+            field: "elevation",
+            valueUnit: "meters"
+          },
+          {
+            type: "size",
+            axis: "width",
+            field: "width",
+            valueUnit: "meters"
+          },
+          {
+            type: "size",
+            axis: "depth",
+            field: "depth",
+            valueUnit: "meters"
+          }
+        ]
+      };
+
+      var layer = new FeatureLayer({
+        fields: [
+          {
+            name: "ObjectID",
+            alias: "ObjectID",
+            type: "oid"
+          }, {
+            name: "elevation",
+            alias: "elevation",
+            type: "double"
+          }, {
+            name: "width",
+            alias: "width",
+            type: "string"
+          }, {
+            name: "depth",
+            alias: "depth",
+            type: "string"
+          }],
+        objectIdField: "ObjectID",
+        source: features,  // autocast as a Collection of new Graphic()，注意数组长度限制，尽量低于60000
+        geometryType: "point",
+        spatialReference: { wkid: 3857 },
+        renderer: uvRenderer,
+        // type: "feature",
+        outFields: ["*"]
+      });
+      map.add(layer);
+    });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>

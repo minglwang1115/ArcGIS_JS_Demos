@@ -1,0 +1,219 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>三维场景下的积水效果动态模拟</title>
+
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        #timeSlider {
+            position: absolute;
+            left: 200px;
+            right: 200px;
+            bottom: 30px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.12/esri/themes/dark/main.css" />
+    <script src="https://js.arcgis.com/4.12/"></script>
+    <script src="assets/js/jquery-2.1.1.min.js"></script>
+
+    <script>
+        require([
+            "esri/Map",
+            "esri/layers/GeoJSONLayer",
+            "esri/layers/FeatureLayer",
+            "esri/views/SceneView",
+            "esri/views/MapView",
+            "esri/WebScene",
+            "esri/config",
+            "esri/widgets/TimeSlider",
+        ], function (Map,
+            GeoJSONLayer,
+            FeatureLayer,
+            SceneView,
+            MapView,
+            WebScene,
+            esriConfig,
+            TimeSlider) {
+                // 此处可使用ArcGIS Pro发布的场景服务(包含Ground Layer、2D Layer)
+                // esriConfig.portalUrl = "https://myHostName.esri.com/arcgis";
+                // var map = new WebScene({
+                //     portalItem: { // autocasts as new PortalItem()
+                //         id: "0614ea1f9dd043e9ba157b9c20d3c538"  // ID of the WebScene on the on-premise portal
+                //     }
+                // });
+
+                var map = new Map({
+                    basemap: "hybrid",
+                    ground: "world-elevation" //使用ArcGIS自带高程图层
+                });
+
+                var view = new SceneView({
+                    container: "viewDiv",
+                    map: map,
+                    camera: {
+                        position: [
+                            117.147, // lon
+                            39.06, // lat
+                            328  // elevation in meters
+                        ],
+                        tilt: 78, //倾斜角. 垂直地面为0
+                        heading: 6 //方位角，正北为0 ，0-360
+                    }
+                });
+
+                view.on("click", function (event) {
+                    console.log(view);
+
+                    console.log("click event: ", event.mapPoint.x + ',' + event.mapPoint.y + ',' + event.mapPoint.z);
+                });
+
+                const timeSlider = new TimeSlider({
+                    container: "timeSlider",
+                    mode: "instant",
+                    stops: {
+                        interval: {
+                            value: 10,
+                            unit: "minutes"
+                        }
+                    }
+                });
+                view.ui.add(timeSlider, "manual");
+
+                // FeatureLayer的渲染器
+                var renderer = {
+                    type: "simple",  // autocasts as new SimpleRenderer()
+                    symbol: {
+                        type: "polygon-3d", // autocasts as new PolygonSymbol3D()
+                        symbolLayers: [
+                            {
+                                type: "extrude", // autocasts as new ExtrudeSymbol3DLayer()
+                                material: {
+                                    color: "#4ec2cd"
+                                }
+                            }
+                        ]
+                    },
+                    visualVariables: [ //视觉变量，elevation字段控制拉伸高度
+                        {
+                            type: "size",
+                            field: "elevation",
+                            valueUnit: "meters"
+                        }
+                    ]
+                };
+                let features = [];
+                var layer = new FeatureLayer({
+                    fields: [
+                        {
+                            name: "ObjectID",
+                            alias: "ObjectID",
+                            type: "oid"
+                        }, {
+                            name: "elevation",
+                            alias: "elevation",
+                            type: "double"
+                        }],
+                    objectIdField: "ObjectID",
+                    // source: features,  // autocast as a Collection of new Graphic()
+                    geometryType: "polygon",
+                    spatialReference: { wkid: 3857 },
+                    renderer: renderer,
+                    outFields: ["*"]
+                });
+                //根据GeoJson文件名，设置时间滑块范围
+                var dateString = "2019-03-01-16-00";
+                var dateArr = dateString.split("-");
+                dateArr = dateArr.map(date => {
+                    return parseInt(date);
+                });
+                timeSlider.fullTimeExtent = {
+                    start: new Date(dateArr[0], dateArr[1] - 1, dateArr[2], dateArr[3], dateArr[4]),
+                    end: new Date(dateArr[0], dateArr[1] - 1, dateArr[2], dateArr[3], dateArr[4] + 50)
+                };
+                timeSlider.values = [timeSlider.fullTimeExtent.start];
+
+                // 先添加开始时刻的积水数据
+                $.get('assets/data/2019-03-01-16-00.json', function (geoJson) {
+                    var featureCollections = geoJson.features;//获取积水区域
+                    featureCollections.forEach(function (element) {
+                        let feature = {
+                            geometry: {
+                                type: "polygon",  //不可省略
+                                rings: element.geometry.coordinates,
+                                spatialReference: { wkid: 3857 },  //不可省略
+                            },
+                            attributes: {
+                                ObjectID: element.id,
+                                elevation: element.properties.elevation,
+                            }
+                        };
+                        features.push(feature);
+                    }, this);
+                    layer.source = features;//设置featurelayer数据源
+                    map.add(layer);
+                });
+
+
+                // watch for time slider timeExtent change
+                timeSlider.watch("timeExtent", function (timeExtent) {
+                    console.log("Time extent now starts at", timeExtent.start, "and finishes at:", timeExtent.end);
+                    // 动态修改featureLayer数据源
+                    var fileName = dateUtil(timeExtent.end);
+                    $.get(`assets/data/${fileName}.json`, function (geoJson) {
+                        features = [];//清空
+                        var featureCollections = geoJson.features;
+                        featureCollections.forEach(function (element) {
+                            let feature = {
+                                geometry: {
+                                    type: "polygon",  //不可省略
+                                    rings: element.geometry.coordinates,
+                                    spatialReference: { wkid: 3857 },  //不可省略
+                                },
+                                attributes: {
+                                    ObjectID: element.id,
+                                    elevation: element.properties.elevation,
+                                }
+                            };
+                            features.push(feature);
+                        }, this);
+                        layer.source = features; //重置FeatureLayer数据源
+                        layer.refresh(); // 刷新FeatureLayer
+                    });
+
+                });
+
+            });
+        // 时间对象转换成 YYYY-MM-DD-HH-mm 格式字符串
+        function dateUtil(dateObject) {
+            let year = dateObject.getFullYear();
+            let month = dateObject.getMonth() + 1;
+            let day = dateObject.getDate();
+            let hour = dateObject.getHours();
+            let minute = dateObject.getMinutes();
+            let dateString = year + '-' + fillZero(month) + '-' + fillZero(day) + '-' + fillZero(hour) + '-' + fillZero(minute);
+            return dateString;
+        }
+        // 为小于 10 的数补零
+        function fillZero(num) {
+            return num < 10 ? '0' + num : num;
+        }
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+    <div id="timeSlider"></div>
+</body>
+
+</html>
