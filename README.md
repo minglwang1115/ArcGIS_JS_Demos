@@ -12,3 +12,15 @@
 ![动态效果图](http://ww1.sinaimg.cn/large/007TqXN5ly1g50iu88hwkg31f40qee83.gif)
 
 ### [效果在线预览](https://minglwang1115.github.io/ArcGIS_JS_Demos/Dynamic_Simulation/Dynamic_Simulation.html)
+
+## 3. [基于ArcGIS JS API 3.29实现的两种距离和面积测量方式](https://github.com/minglwang1115/ArcGIS_JS_Demos/tree/master/Measure_Tool_3X)
+
+![效果图](http://ww1.sinaimg.cn/large/007TqXN5ly1g5jd7hq3fej31f20q64qq.jpg)
+
+### [效果在线预览](https://minglwang1115.github.io/ArcGIS_JS_Demos/Measure_Tool_3X/index.html)
+
+## 3. [基于ArcGIS JS API 4.12实现的两种距离和面积测量方式](https://github.com/minglwang1115/ArcGIS_JS_Demos/tree/master/Measure_Tool_4X)
+
+![效果图](http://ww1.sinaimg.cn/large/007TqXN5ly1g5jd7hq3fej31f20q64qq.jpg)
+
+### [效果在线预览](https://minglwang1115.github.io/ArcGIS_JS_Demos/Measure_Tool_4X/index.html)

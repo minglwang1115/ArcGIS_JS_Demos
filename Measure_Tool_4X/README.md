@@ -20,6 +20,10 @@
 1. 在4.x版本中，`SketchViewModel`对象处于绘制状态时，`View`监听不到点击事件;
 2. 在4.x版本中当涉及到`Font`字体时，会到**https://static.arcgis.com/fonts**这个地址请求字体资源，速度极慢，可以考虑将字体文件下载后部署到本地服务器上。
 
+# 主要代码
+
+见 `modules/Measure.js`,测试页面代码见`index.html`
+
 # 效果图
 
 # 效果预览
