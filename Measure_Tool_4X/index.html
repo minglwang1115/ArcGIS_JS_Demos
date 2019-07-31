@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>基于ArcGIS JS API 4.12实现的两种距离和面积测量方式</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.12/esri/themes/light/main.css" />
+</head>
+<style>
+  html,
+  body,
+  #viewDiv {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .horizontal-toolbar {
+    position: absolute;
+    top: 30px;
+    right: 75px;
+    /* width: 100px; */
+    height: 50px;
+    overflow: hidden;
+    background-color: white;
+    border-radius: 4px;
+    z-index: 100;
+  }
+
+  .horizontal-toolbar>li {
+    position: relative;
+    margin: 5px;
+    list-style: none;
+    float: left;
+    width: 46px;
+    height: 46px;
+  }
+</style>
+<script>
+  var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+  //var package_path = window.location.pathname.replace(/\/[^\/]*$/,"");
+  var dojoConfig = {
+    // The locationPath logic below may look confusing but all its doing is
+    // enabling us to load the api from a CDN and load local modules from the correct location.
+    packages: [{
+      name: "modules",
+      location: package_path + '/modules'
+    }]
+  };
+</script>
+<script src="https://js.arcgis.com/4.12/"></script>
+<script>
+  var map, measureTool;
+  require([
+    "modules/Measure",
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/config"
+  ], function (Measure, Map, MapView, esriConfig) {
+    esriConfig.fontsUrl = "http://10.10.50.226:8080/fonts";// = "http:10.10.50.226:8080/fonts";
+    const map = new Map({
+      basemap: "streets",
+    });
+
+    const view = new MapView({
+      container: "viewDiv",
+      map: map,
+      zoom: 5,
+      center: [90, 45]
+    });
+    //方式一：使用几何服务
+    var options = {
+      view: view,
+      map: map,
+      geometryServiceUrl: 'https://utility.arcgisonline.com/ArcGIS/rest/services/Geometry/GeometryServer'
+    };
+    //方式二：不传几何服务参数，使用GeometryEngine
+    // var options = {
+    //     map: map
+    // };
+    measureTool = new Measure(options);
+  });
+  function measureDistance() {
+    measureTool.measureDistance();
+  }
+  function measureArea() {
+    measureTool.measureArea();
+  }
+  function clearMeasureActionAndGraphics() {
+    measureTool.clearMeasureActionAndGraphics();
+  }
+</script>
+
+<body>
+  <div id="viewDiv" style="position:relative;">
+    <ul class="horizontal-toolbar">
+      <li onclick="measureDistance()">
+        <img src="./icons/distance.png" alt="测量距离" title="测量距离">
+      </li>
+      <li onclick="measureArea()">
+        <img src="./icons/area.png" alt="测量面积" title="测量面积">
+      </li>
+      <li onclick="clearMeasureActionAndGraphics()">
+        <img src="./icons/clear.png" alt="清除" title="清除">
+      </li>
+    </ul>
+  </div>
+</body>
+
+</html>
