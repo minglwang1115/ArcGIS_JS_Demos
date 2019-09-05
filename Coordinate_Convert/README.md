@@ -8,12 +8,12 @@
 
 代码已经封装成了dojo模块(类)，方便在使用ArcGIS JS API时引用该坐标转换模块。
 
-**LatLong2GaussKruger.js**
+[**LatLong2GaussKruger.js**](https://github.com/minglwang1115/ArcGIS_JS_Demos/blob/master/Coordinate_Convert/modules/LatLong2GaussKruger.js)
 
 
 # 使用示例
 
-
+[Coord_Convert.html](https://github.com/minglwang1115/ArcGIS_JS_Demos/blob/master/Coordinate_Convert/Coord_Convert.html)
 
 经过与ArcGIS Server的几何服务投影功能的结果对比，结果 `<0.0001`
 

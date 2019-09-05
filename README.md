@@ -24,3 +24,9 @@
 ![效果图](http://ww1.sinaimg.cn/large/007TqXN5ly1g5k6k411lfj31f30qb7wh.jpg)
 
 ### [效果在线预览](https://minglwang1115.github.io/ArcGIS_JS_Demos/Measure_Tool_4X/index.html)
+
+## 5. [经纬度坐标转换高斯-克吕格平面坐标](https://github.com/minglwang1115/ArcGIS_JS_Demos/tree/master/Coordinate_Convert)
+
+![效果图](http://ww1.sinaimg.cn/large/007TqXN5ly1g62qvmtos0j30t00b7tdo.jpg)
+
+### [在线预览](https://github.com/minglwang1115/ArcGIS_JS_Demos/Coordinate_Convert/Coord_Convert.html)
