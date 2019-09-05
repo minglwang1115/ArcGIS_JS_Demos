@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>坐标转换模块</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.11/esri/themes/light/main.css" />
+</head>
+<style>
+    html,
+    body,
+    #viewDiv {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    .horizontal-toolbar{
+        position: absolute;
+        top: 30px;
+        right: 75px;
+        /* width: 100px; */
+        height: 50px;
+        overflow: hidden;
+        background-color: white;
+        border-radius: 4px;
+        z-index: 100;
+    }
+    .horizontal-toolbar>li{
+        position: relative;
+        margin: 5px;
+        list-style: none; 
+        float: left;
+        width: 46px;
+        height: 46px;
+    }
+</style>
+<script>
+    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+    //var package_path = window.location.pathname.replace(/\/[^\/]*$/,"");
+    var dojoConfig = {
+        packages: [{
+            name: "modules",
+            location: package_path + '/modules'
+        }]
+    };
+</script>
+<script src="https://js.arcgis.com/4.12/"></script>
+<script>
+    var map,measureTool;
+    require([
+        "modules/LatLong2GaussKruger",
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/config"
+    ], function (LatLong2GaussKruger, Map, MapView, esriConfig) {
+        const map = new Map({
+          basemap: "streets",
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: map,
+          zoom: 5,
+          center: [90, 45]
+        });
+
+        convertTool = new LatLong2GaussKruger(3,114,0,500000,0);
+    });
+    function convert () {
+        console.log("经纬度坐标：113.554688,22.25256")
+        let coord = convertTool.JWgetGK(113.554688,22.25256);
+        console.log("转换后：" + coord.x + "," + coord.y);
+    }
+</script>
+<body>
+    <div id="viewDiv" style="position:relative;">
+        <ul class="horizontal-toolbar">
+            <li onclick="convert()">坐标转换
+            </li>
+        </ul>
+    </div>
+</body>
+</html>
